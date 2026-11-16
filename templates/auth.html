@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+{% set titles = {
+  'login': 'Log in',
+  'register': 'Create your account',
+  'forgot': 'Forgot password',
+  'reset': 'Choose a new password',
+  'account': 'Account email',
+  'invalid_link': 'Link not valid'
+} %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titles[mode] }} - StudySmart AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <main class="auth-wrap">
+    <h1 class="brand">Study<mark>Smart</mark> AI</h1>
+    <p class="tagline">Your notes, summaries and practice questions in one place.</p>
+
+    <form class="panel auth-card" method="post" novalidate>
+      <h2>{{ titles[mode] }}</h2>
+
+      {% if error %}<p class="message" role="alert">{{ error }}</p>{% endif %}
+      {% if notice %}<p class="message ok" role="status">{{ notice }}</p>{% endif %}
+
+      {% if mode == 'forgot' %}
+        <p class="hint-text">Enter the email address you registered with. We will send you a link to choose a new password.</p>
+      {% elif mode == 'account' %}
+        <p class="hint-text">This email is used to send your password reset link.</p>
+      {% elif mode == 'reset' %}
+        <p class="hint-text">Choosing a new password for <strong>{{ username }}</strong>.</p>
+      {% endif %}
+
+      {# ---------- username (login / register) ---------- #}
+      {% if mode in ('login', 'register') %}
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" value="{{ username }}"
+               autocomplete="username" required autofocus
+               {% if mode == 'register' %}minlength="3" maxlength="30"{% endif %}>
+        {% if mode == 'register' %}<span class="hint">3-30 characters. Letters, numbers and underscore.</span>{% endif %}
+      {% endif %}
+
+      {# ---------- email (register / forgot / account) ---------- #}
+      {% if mode in ('register', 'forgot', 'account') %}
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" value="{{ email }}"
+               autocomplete="email" required maxlength="120" {% if mode != 'register' %}autofocus{% endif %}>
+      {% endif %}
+
+      {# ---------- current password (account) ---------- #}
+      {% if mode == 'account' %}
+        <label for="password">Current password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password">
+      {% endif %}
+
+      {# ---------- password (login / register / reset) ---------- #}
+      {% if mode in ('login', 'register', 'reset') %}
+        <label for="password">{{ 'New password' if mode == 'reset' else 'Password' }}</label>
+        <input id="password" name="password" type="password" required
+               autocomplete="{{ 'current-password' if mode == 'login' else 'new-password' }}"
+               {% if mode != 'login' %}minlength="8"{% endif %} {% if mode == 'reset' %}autofocus{% endif %}>
+        {% if mode != 'login' %}<span class="hint">At least 8 characters.</span>{% endif %}
+      {% endif %}
+
+      {% if mode in ('register', 'reset') %}
+        <label for="confirm">{{ 'Confirm new password' if mode == 'reset' else 'Confirm password' }}</label>
+        <input id="confirm" name="confirm" type="password" required autocomplete="new-password">
+      {% endif %}
+
+      {% if mode != 'invalid_link' %}
+      <button type="submit" class="btn primary">
+        {% if mode == 'login' %}Log in
+        {% elif mode == 'register' %}Create account
+        {% elif mode == 'forgot' %}Send reset link
+        {% elif mode == 'reset' %}Set new password
+        {% else %}Save email{% endif %}
+      </button>
+      {% endif %}
+
+      <p class="switch">
+        {% if mode == 'login' %}
+          <a href="{{ url_for('forgot') }}">Forgot password?</a><br>
+          New here? <a href="{{ url_for('register') }}">Create an account</a>
+        {% elif mode == 'register' %}
+          Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+        {% elif mode == 'account' %}
+          <a href="{{ url_for('home') }}">Back to StudySmart AI</a>
+        {% elif mode == 'invalid_link' %}
+          <a href="{{ url_for('forgot') }}">Request a new link</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">Back to log in</a>
+        {% endif %}
+      </p>
+    </form>
+  </main>
+</body>
+</html>

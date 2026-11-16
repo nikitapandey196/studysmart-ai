@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StudySmart AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <div>
+        <h1 class="brand">Study<mark>Smart</mark> AI</h1>
+        <p class="tagline">Paste your notes or upload a PDF. Get simpler notes, summaries and practice questions.</p>
+      </div>
+      <div class="account">
+        <span>Signed in as <strong>{{ username }}</strong></span>
+        <a href="{{ url_for('account') }}">Account email</a>
+        <form method="post" action="{{ url_for('logout') }}">
+          <button type="submit" class="link">Log out</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+    <!-- INPUT -->
+    <section class="panel" aria-labelledby="in-title">
+      <h2 id="in-title">Your study material</h2>
+
+      <textarea id="material" rows="12" maxlength="30000"
+        placeholder="Paste a chapter, lecture notes or any text you want to study..."
+        aria-label="Study material"></textarea>
+
+      <div class="row between small">
+        <span id="counter">0 / 30,000 characters</span>
+        <span class="row gap">
+          <button type="button" class="link" id="sampleBtn">Use sample text</button>
+          <button type="button" class="link" id="clearBtn">Clear</button>
+        </span>
+      </div>
+
+      <div class="upload">
+        <label class="btn ghost" for="pdfInput">Upload PDF</label>
+        <input type="file" id="pdfInput" accept="application/pdf" hidden>
+        <span id="pdfStatus" class="small muted">Text-based PDFs up to 10 MB</span>
+      </div>
+
+      <fieldset class="modes">
+        <legend>What do you need?</legend>
+        <label><input type="radio" name="mode" value="simplify" checked><span>Simplify</span></label>
+        <label><input type="radio" name="mode" value="summary"><span>Summarize</span></label>
+        <label><input type="radio" name="mode" value="concepts"><span>Key concepts</span></label>
+        <label><input type="radio" name="mode" value="keywords"><span>Keywords</span></label>
+        <label><input type="radio" name="mode" value="questions"><span>Practice questions</span></label>
+      </fieldset>
+
+      <button type="button" class="btn primary" id="generateBtn">Generate</button>
+      <p id="message" class="message" role="alert" hidden></p>
+    </section>
+
+    <!-- RESULT -->
+    <section class="panel result-panel" aria-labelledby="out-title" aria-live="polite">
+      <div class="row between">
+        <h2 id="out-title">Result</h2>
+        <div class="row gap" id="resultActions" hidden>
+          <button type="button" class="btn small-btn" id="copyBtn">Copy</button>
+          <button type="button" class="btn small-btn" id="downloadBtn">Download .txt</button>
+          <button type="button" class="btn small-btn" id="printBtn">Print</button>
+        </div>
+      </div>
+
+      <div id="empty" class="empty">
+        <p>Your notes will appear here.</p>
+        <p class="muted">Add some material on the left, choose a tool and press Generate.</p>
+      </div>
+
+      <div id="loading" class="loading" hidden>
+        <span class="spinner" aria-hidden="true"></span> Working on it. This usually takes a few seconds.
+      </div>
+
+      <div id="meta" class="meta" hidden></div>
+      <article id="output" class="output" hidden></article>
+
+      <div id="termsBox" class="terms" hidden>
+        <h3>Frequent terms found in your text</h3>
+        <ul id="terms"></ul>
+      </div>
+    </section>
+  </main>
+
+  <section class="wrap history" aria-labelledby="hist-title">
+    <div class="row between">
+      <h2 id="hist-title">Saved history</h2>
+      <button type="button" class="link" id="clearHistory">Delete all</button>
+    </div>
+    <ul id="historyList" class="history-list"></ul>
+    <p id="historyEmpty" class="muted">Nothing saved yet. Every result you generate is saved to your account.</p>
+  </section>
+
+  <footer class="wrap foot small muted">StudySmart AI &middot; Python, Flask, Gemini API, SQLite</footer>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
